@@ -1,6 +1,7 @@
 package com.chatop.api.services;
 
 import com.chatop.api.dto.AuthResponse;
+import com.chatop.api.dto.LoginRequest;
 import com.chatop.api.dto.RegisterRequest;
 import com.chatop.api.dto.UserResponse;
 import com.chatop.api.models.User;
@@ -27,6 +28,20 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail());
         return new AuthResponse(token);
+    }
+
+    public AuthResponse login(LoginRequest request){
+        // Check l'utilisateur possédant l'email
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new RuntimeException("User not found"));
+        // Check le password
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){ // On utilise matches car l'une est encryptée alors que l'autre non
+            throw new RuntimeException("Invalid password");
+        }
+        // Génère le token
+        String token = jwtService.generateToken(user.getEmail());
+        return AuthResponse.builder()
+                .token(token)
+                .build();
     }
 
     public UserResponse getMe(String email){
