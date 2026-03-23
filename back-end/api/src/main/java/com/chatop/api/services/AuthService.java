@@ -2,6 +2,7 @@ package com.chatop.api.services;
 
 import com.chatop.api.dto.AuthResponse;
 import com.chatop.api.dto.RegisterRequest;
+import com.chatop.api.dto.UserResponse;
 import com.chatop.api.models.User;
 import com.chatop.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,18 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail());
         return new AuthResponse(token);
+    }
+
+    public UserResponse getMe(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
+
+        //on mappe en DTO
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .created_at(user.getCreatedAt())
+                .updated_at(user.getUpdatedAt())
+                .build();
     }
 }

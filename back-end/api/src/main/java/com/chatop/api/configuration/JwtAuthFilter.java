@@ -54,7 +54,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // On dit à Spring : "C'est bon, cet utilisateur est validé !"
+                // On dit à Spring : "C'est bon, cet utilisateur est validé !" et on enregistre le token dans le contexte
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
