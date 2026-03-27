@@ -10,34 +10,35 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "USERS")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@Table(name = "MESSAGES")
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
-    private String email;
-    private String name;
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "rental_id")
+    private Rental rental;
 
-    @Column(name =  "created_at", updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(length = 2000)
+    private String message;
+
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
-    void onCreate(){
+    protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
-
-    @PreUpdate
-    void onUpdate(){
-        updatedAt = LocalDateTime.now();
-    }
-
 }
