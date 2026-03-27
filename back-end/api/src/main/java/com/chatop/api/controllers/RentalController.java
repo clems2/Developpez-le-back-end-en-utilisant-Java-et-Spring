@@ -66,4 +66,16 @@ public class RentalController {
 
         return ResponseEntity.ok(new MessageResponse("Rental created !"));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MessageResponse> update(
+            @PathVariable("id") Integer id,
+            @RequestParam("name") String name,
+            @RequestParam("surface") BigDecimal surface,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("description") String description
+    ) {
+        rentalService.updateRental(id, name, surface, price, description);
+        return ResponseEntity.ok(new MessageResponse("Rental updated !"));
+    }
 }

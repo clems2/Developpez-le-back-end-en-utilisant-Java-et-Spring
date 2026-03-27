@@ -113,4 +113,22 @@ public class RentalService {
 
         rentalRepository.save(rental);
     }
+
+    //PUT
+    public void updateRental(Integer id, String name, BigDecimal surface, BigDecimal price, String description) {
+        // 1. On cherche la location existante
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
+
+        // 2. On met à jour les champs autorisés
+        rental.setName(name);
+        rental.setSurface(surface);
+        rental.setPrice(price);
+        rental.setDescription(description);
+
+        // Note : On ne touche PAS à rental.getPicture(), //TODO voir s'il y a des sécurités ou annotation pour eviter qu'on y accède
+
+        // 3. Sauvegarde (Update en SQL)
+        rentalRepository.save(rental);
+    }
 }
