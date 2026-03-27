@@ -1,5 +1,6 @@
 package com.chatop.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,8 @@ public class UserResponse {
     private Integer id;
     private String name;
     private String email;
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDateTime created_at; // Format attendu par le front
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDateTime updated_at;
 }
