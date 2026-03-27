@@ -20,19 +20,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        System.out.println("register");
+        System.out.println("********* register *********");
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) { //RequestBody car les données sont dans le corps de la requète et non l'URL
-        System.out.println("login");
+        System.out.println("********* login *********");
         return ResponseEntity.ok(authService.login(request));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getMe(){
-        System.out.println("getMe");
+        System.out.println("********* getMe *********");
         //On récupère l'utilisateur authentifié grâce aux filtres appliqués
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserResponse userResponse = authService.getMe(email);

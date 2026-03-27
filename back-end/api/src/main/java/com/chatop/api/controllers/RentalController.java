@@ -23,13 +23,13 @@ public class RentalController {
 
     @GetMapping
     public ResponseEntity<RentalsResponse> getAll() {
-        System.out.println("getAllRentals");
+        System.out.println("********* getAllRentals *********");
         return ResponseEntity.ok(rentalService.getAllRentals());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RentalDto> getOne(@PathVariable Integer id) {
-        System.out.println("getOneRental");
+        System.out.println("********* getOneRental *********");
         return ResponseEntity.ok(rentalService.getRentalById(id));
     }
 
@@ -60,7 +60,7 @@ public class RentalController {
             @RequestParam("description") String description,
             @RequestParam("picture") MultipartFile picture // Le fichier envoyé par le front
     ) {
-        System.out.println("createRental");
+        System.out.println("********* createRental *********");
 
         // 1. Récupérer l'email de l'utilisateur connecté via le Token
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -79,7 +79,7 @@ public class RentalController {
             @RequestParam("price") BigDecimal price,
             @RequestParam("description") String description
     ) {
-        System.out.println("putRental");
+        System.out.println("********* putRental *********");
         rentalService.updateRental(id, name, surface, price, description);
         return ResponseEntity.ok(new MessageResponse("Rental updated !"));
     }
