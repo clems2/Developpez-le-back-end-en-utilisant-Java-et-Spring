@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,7 +92,7 @@ public class RentalService {
     }
 
     //ONE BY ONE VERSION
-    public void createOneRental(String name, BigDecimal surface, BigDecimal price, String description, MultipartFile picture, String ownerEmail) {
+    public void createOneRental(String name, Integer surface, Integer price, String description, MultipartFile picture, String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new RuntimeException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
 
@@ -115,7 +114,7 @@ public class RentalService {
     }
 
     //PUT
-    public void updateRental(Integer id, String name, BigDecimal surface, BigDecimal price, String description) {
+    public void updateRental(Integer id, String name, Integer surface, Integer price, String description) {
         // 1. On cherche la location existante
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));

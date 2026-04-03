@@ -12,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -55,8 +54,8 @@ public class RentalController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> create(
             @RequestParam("name") String name, //envoyer via formulaire (formData) donc passer en clair et @RequestParam
-            @RequestParam("surface") BigDecimal surface,
-            @RequestParam("price") BigDecimal price,
+            @RequestParam("surface") Integer surface,
+            @RequestParam("price") Integer price,
             @RequestParam("description") String description,
             @RequestParam("picture") MultipartFile picture // Le fichier envoyé par le front
     ) {
@@ -75,8 +74,8 @@ public class RentalController {
     public ResponseEntity<MessageResponse> update(
             @PathVariable("id") Integer id,
             @RequestParam("name") String name,
-            @RequestParam("surface") BigDecimal surface,
-            @RequestParam("price") BigDecimal price,
+            @RequestParam("surface") Integer surface,
+            @RequestParam("price") Integer price,
             @RequestParam("description") String description
     ) {
         System.out.println("********* putRental *********");
