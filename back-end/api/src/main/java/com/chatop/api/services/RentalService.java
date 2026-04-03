@@ -8,7 +8,13 @@ import com.chatop.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,7 +103,27 @@ public class RentalService {
         // Simulation pour le moment
         String pictureUrl = "";
 
-        //TODO implémenter la gestion du fichier upload dans le formulaire
+        //Gestion de l'upload du fichier
+        if (request.getPicture() != null && !request.getPicture().isEmpty()) {
+            try {
+                // Création d'un nom unique : timestamp + nom original
+                String fileName = System.currentTimeMillis() + "_" + request.getPicture().getOriginalFilename();
+
+                // Chemin absolu vers mon dossier static
+                Path path = Paths.get("src/main/resources/static/images/" + fileName);
+
+                // Copie physique du fichier
+                Files.copy(request.getPicture().getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+                // Construction de l'URL finale pour la BDD
+                //On va le récupérer de façon dynamique avec le contexte Spring pour éviter des conflits sur la config
+                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+                pictureUrl = baseUrl + "/images/" + fileName;
+                //TODO .requestMatchers("/images/**").permitAll() dans le filterChain voir si c'est la bonne solution car en termes de sécurité c'est pas terrible
+            } catch (IOException e) {
+                throw new RuntimeException("Impossible de sauvegarder l'image", e);
+            }
+        }
 
         Rental rental = Rental.builder()
                 .name(request.getName())

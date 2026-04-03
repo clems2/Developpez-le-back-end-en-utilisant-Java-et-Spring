@@ -2,9 +2,6 @@ package com.chatop.api.controllers;
 
 import com.chatop.api.dto.*;
 import com.chatop.api.services.RentalService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rentals")
 @RequiredArgsConstructor
-//@Validated se TODO se renseigner sur cette annotation
+@Validated //Valide les annotations sur les paramètres directement
 public class RentalController {
     private final RentalService rentalService;
 
@@ -57,7 +54,7 @@ public class RentalController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> create(
-            @Valid RentalCreateRequest request
+            @Valid @ModelAttribute RentalCreateRequest request //Spring se charge du mapping du formulaire
     ) {
         System.out.println("********* createRental *********");
 
@@ -73,7 +70,7 @@ public class RentalController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> update(
             @PathVariable("id") Integer id,
-            @Valid RentalUpdateRequest request
+            @Valid @ModelAttribute  RentalUpdateRequest request //Spring se charge du mapping du formulaire
     ) {
         System.out.println("********* putRental *********");
         rentalService.updateRental(id, request);
