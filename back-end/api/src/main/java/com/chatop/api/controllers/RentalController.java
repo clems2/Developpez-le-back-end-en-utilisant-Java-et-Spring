@@ -5,10 +5,13 @@ import com.chatop.api.services.RentalService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rentals")
 @RequiredArgsConstructor
+//@Validated se TODO se renseigner sur cette annotation
 public class RentalController {
     private final RentalService rentalService;
 
@@ -27,7 +31,7 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RentalDto> getOne(@PathVariable Integer id) {
+    public ResponseEntity<RentalDto> getOne(@PathVariable @Min(1) Integer id) {
         System.out.println("********* getOneRental *********");
         return ResponseEntity.ok(rentalService.getRentalById(id));
     }
@@ -53,11 +57,7 @@ public class RentalController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> create(
-            @RequestParam("name") String name, //envoyer via formulaire (formData) donc passer en clair et @RequestParam
-            @RequestParam("surface") Integer surface,
-            @RequestParam("price") Integer price,
-            @RequestParam("description") String description,
-            @RequestParam("picture") MultipartFile picture // Le fichier envoyé par le front
+            @Valid RentalCreateRequest request
     ) {
         System.out.println("********* createRental *********");
 
@@ -65,21 +65,18 @@ public class RentalController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         // 2. Appeler le service pour UNE SEULE location
-        rentalService.createOneRental(name, surface, price, description, picture, email);
+        rentalService.createOneRental(request, email);
 
         return ResponseEntity.ok(new MessageResponse("Rental created !"));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> update(
             @PathVariable("id") Integer id,
-            @RequestParam("name") String name,
-            @RequestParam("surface") Integer surface,
-            @RequestParam("price") Integer price,
-            @RequestParam("description") String description
+            @Valid RentalUpdateRequest request
     ) {
         System.out.println("********* putRental *********");
-        rentalService.updateRental(id, name, surface, price, description);
+        rentalService.updateRental(id, request);
         return ResponseEntity.ok(new MessageResponse("Rental updated !"));
     }
 }

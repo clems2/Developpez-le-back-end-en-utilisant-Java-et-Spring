@@ -1,8 +1,6 @@
 package com.chatop.api.services;
 
-import com.chatop.api.dto.RentalDto;
-import com.chatop.api.dto.RentalRequestDto;
-import com.chatop.api.dto.RentalsResponse;
+import com.chatop.api.dto.*;
 import com.chatop.api.models.Rental;
 import com.chatop.api.models.User;
 import com.chatop.api.repositories.RentalRepository;
@@ -92,7 +90,7 @@ public class RentalService {
     }
 
     //ONE BY ONE VERSION
-    public void createOneRental(String name, Integer surface, Integer price, String description, MultipartFile picture, String ownerEmail) {
+    public void createOneRental(RentalCreateRequest request, String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new RuntimeException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
 
@@ -102,10 +100,10 @@ public class RentalService {
         //TODO implémenter la gestion du fichier upload dans le formulaire
 
         Rental rental = Rental.builder()
-                .name(name)
-                .surface(surface)
-                .price(price)
-                .description(description)
+                .name(request.getName())
+                .surface(request.getSurface())
+                .price(request.getPrice())
+                .description(request.getDescription())
                 .picture(pictureUrl)
                 .owner(owner)
                 .build();
@@ -114,16 +112,16 @@ public class RentalService {
     }
 
     //PUT
-    public void updateRental(Integer id, String name, Integer surface, Integer price, String description) {
+    public void updateRental(Integer id, RentalUpdateRequest request) {
         // 1. On cherche la location existante
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
 
         // 2. On met à jour les champs autorisés
-        rental.setName(name);
-        rental.setSurface(surface);
-        rental.setPrice(price);
-        rental.setDescription(description);
+        rental.setName(request.getName());
+        rental.setSurface(request.getSurface());
+        rental.setPrice(request.getPrice());
+        rental.setDescription(request.getDescription());
 
         // Note : On ne touche PAS à rental.getPicture(), //TODO voir s'il y a des sécurités ou annotation pour eviter qu'on y accède
 

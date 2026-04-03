@@ -2,6 +2,7 @@ package com.chatop.api.controllers;
 
 import com.chatop.api.dto.UserResponse;
 import com.chatop.api.services.UserService;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable("id") Integer id) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable("id") @Min(1) Integer id) {
         System.out.println("********* getUser *********");
         return ResponseEntity.ok(userService.getUserById(id));
     }
