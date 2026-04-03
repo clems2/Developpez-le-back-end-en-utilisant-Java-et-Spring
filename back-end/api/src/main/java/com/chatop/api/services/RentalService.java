@@ -138,12 +138,17 @@ public class RentalService {
     }
 
     //PUT
-    public void updateRental(Integer id, RentalUpdateRequest request) {
-        // 1. On cherche la location existante
+    public void updateRental(Integer id, RentalUpdateRequest request, String currentUserEmail) {
+        // On cherche la location existante
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
 
-        // 2. On met à jour les champs autorisés
+        //On vérifie que l'owner et le user courant sont les mêmes
+        if (!rental.getOwner().getEmail().equals(currentUserEmail)) {
+            throw new RuntimeException("You are not authorized to update this rental");
+        }
+
+        // On met à jour les champs autorisés
         rental.setName(request.getName());
         rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());
@@ -151,7 +156,7 @@ public class RentalService {
 
         // Note : On ne touche PAS à rental.getPicture(), //TODO voir s'il y a des sécurités ou annotation pour eviter qu'on y accède
 
-        // 3. Sauvegarde (Update en SQL)
+        // Sauvegarde (Update en SQL)
         rentalRepository.save(rental);
     }
 }

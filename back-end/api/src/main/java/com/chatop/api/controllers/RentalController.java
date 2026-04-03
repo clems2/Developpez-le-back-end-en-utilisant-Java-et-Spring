@@ -73,7 +73,8 @@ public class RentalController {
             @Valid @ModelAttribute  RentalUpdateRequest request //Spring se charge du mapping du formulaire
     ) {
         System.out.println("********* putRental *********");
-        rentalService.updateRental(id, request);
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        rentalService.updateRental(id, request, currentUserEmail);
         return ResponseEntity.ok(new MessageResponse("Rental updated !"));
     }
 }
