@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -32,11 +34,10 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getMe(){
+    public ResponseEntity<UserResponse> getMe(Principal principal){
         System.out.println("********* getMe *********");
-        //On récupère l'utilisateur authentifié grâce aux filtres appliqués
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserResponse userResponse = authService.getMe(email);
+        //On récupère l'utilisateur authentifié grâce au principal (context Spring)
+        UserResponse userResponse = authService.getMe(principal.getName());
         return ResponseEntity.ok(userResponse);
 
     }

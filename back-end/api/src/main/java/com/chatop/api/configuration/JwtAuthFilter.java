@@ -33,17 +33,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-        // 1. Si pas de header ou pas de header avec Bearer (convention jwt), on passe au filtre suivant
+        // Si pas de header ou pas de header avec Bearer (convention jwt), on passe au filtre suivant
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response); //on passe la main aux filtres suivant sans rien faire
             return;
         }
 
-        // 2. Extraire le token (substring 7 pour retirer "Bearer ")
+        // Extraire le token (substring 7 pour retirer "Bearer ")
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt); // On lit l'email dans le token
 
-        // 3. Si on a un email et que l'utilisateur n'est pas déjà authentifié dans le contexte
+        //Si on a un email et que l'utilisateur n'est pas déjà authentifié dans le contexte
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtService.isTokenValid(jwt)) { //SI token non expiré et signature correcte
                 // Créer l'objet d'authentification pour Spring Security

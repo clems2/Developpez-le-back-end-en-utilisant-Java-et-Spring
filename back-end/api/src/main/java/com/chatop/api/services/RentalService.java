@@ -65,22 +65,22 @@ public class RentalService {
 
     //MOCKOON VERSION
     public void createRentalsFromList(List<RentalRequestDto> rentalRequests, List<MultipartFile> pictures, String ownerEmail) {
-        // 1. On récupère l'objet User complet à partir de l'email du token
+        // On récupère l'objet User complet à partir de l'email du token
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
 
-        // 2. On boucle sur la liste envoyée par le Front/Mockoon version
+        // On boucle sur la liste envoyée par le Front/Mockoon version
         for (int i = 0; i < rentalRequests.size(); i++) {
             RentalRequestDto dto = rentalRequests.get(i);
 
-            // 3. Gestion de l'image (Simulation)
+            // Gestion de l'image (Simulation)
             // Dans un vrai projet, on sauvegarderait pictures.get(i) sur le disque
             // Ici, on met une URL par défaut ou le nom du fichier pour l'exemple
             /*String pictureUrl = (pictures != null && i < pictures.size())
                     ? "assets/images/" + pictures.get(i).getOriginalFilename()
                     : "";*/
             String pictureUrl =  "";
-            // 4. Création de l'entité Rental
+            // Création de l'entité Rental
             Rental rental = Rental.builder()
                     .name(dto.getName())
                     .surface(dto.getSurface())
@@ -90,7 +90,7 @@ public class RentalService {
                     .owner(owner) // On lie la location à l'utilisateur
                     .build();
 
-            // 5. Sauvegarde en BDD
+            // Sauvegarde en BDD
             rentalRepository.save(rental);
         }
     }

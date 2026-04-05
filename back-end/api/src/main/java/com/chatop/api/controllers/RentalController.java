@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -37,7 +38,8 @@ public class RentalController {
     /*@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> create(
             @RequestParam("rentals") String rentalsJson, // La liste arrive sous forme de texte JSON
-            @RequestParam("pictures") List<MultipartFile> pictures // Les fichiers binaires à part
+            @RequestParam("pictures") List<MultipartFile> pictures, // Les fichiers binaires à part
+            Principal principal
     ) throws JsonProcessingException {
 
         // On utilise ObjectMapper pour transformer le texte JSON en liste d'objets
@@ -45,7 +47,7 @@ public class RentalController {
         RentalListRequestDto requestWrapper = objectMapper.readValue(rentalsJson, RentalListRequestDto.class);
 
         //Récupération du user connecté
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = principal.getName();
 
         // On envoie tout au service pour traitement
         rentalService.createRentalsFromList(requestWrapper.getRentals(), pictures, email);
@@ -54,27 +56,24 @@ public class RentalController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> create(
-            @Valid @ModelAttribute RentalCreateRequest request //Spring se charge du mapping du formulaire
+            @Valid @ModelAttribute RentalCreateRequest request, //Spring se charge du mapping du formulaire
+            Principal principal
     ) {
         System.out.println("********* createRental *********");
-
-        // 1. Récupérer l'email de l'utilisateur connecté via le Token
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        // 2. Appeler le service pour UNE SEULE location
-        rentalService.createOneRental(request, email);
+        // On appelle le service pour une location et on récupère le mail dans le Principal
+        rentalService.createOneRental(request, principal.getName());
 
         return ResponseEntity.ok(new MessageResponse("Rental created !"));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> update(
-            @PathVariable("id") Integer id,
-            @Valid @ModelAttribute  RentalUpdateRequest request //Spring se charge du mapping du formulaire
+            @PathVariable("id") @Min(1) Integer id,
+            @Valid @ModelAttribute  RentalUpdateRequest request, //Spring se charge du mapping du formulaire
+            Principal principal // Injecté automatiquement
     ) {
         System.out.println("********* putRental *********");
-        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        rentalService.updateRental(id, request, currentUserEmail);
+        rentalService.updateRental(id, request, principal.getName());
         return ResponseEntity.ok(new MessageResponse("Rental updated !"));
     }
 }
