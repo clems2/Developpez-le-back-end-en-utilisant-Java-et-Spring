@@ -11,10 +11,12 @@ import com.chatop.api.repositories.MessageRepository;
 import com.chatop.api.repositories.RentalRepository;
 import com.chatop.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
@@ -22,14 +24,18 @@ public class MessageService {
     private final MessageMapper messageMapper;
 
     public void saveMessage(MessageRequest request) {
+        log.info("Nouveau message reçu : {} ", request.getMessage());
         // Récupération de l'expéditeur
+        log.info("Try to get the sender: {}", request.getUser_id());
         User user = userRepository.findById(request.getUser_id())
                 .orElseThrow(() -> new BadRequestException("User not found with id: "));
 
         // Récupération de la location concernée
+        log.info("Try to get the rental: {}", request.getRental_id());
         Rental rental = rentalRepository.findById(request.getRental_id())
                 .orElseThrow(() -> new BadRequestException("Rental not found"));
 
+        log.info("User and rental founded");
         // Construction de l'entité Message
         Message messageEntity = messageMapper.toEntity(request);
 

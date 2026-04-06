@@ -8,6 +8,7 @@ import com.chatop.api.models.User;
 import com.chatop.api.repositories.RentalRepository;
 import com.chatop.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
@@ -32,13 +34,14 @@ public class RentalService {
                 .map(rentalMapper::toDto) // Utilisation du mapper : ultra propre !
                 .collect(Collectors.toList());
 
-
+        log.info("Rentals founded");
         return new RentalsResponse(rentals);
     }
 
     public RentalDto getRentalById(Integer id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("Rental not found"));
+        log.info("Rentals founded with id : {}",id);
         return rentalMapper.toDto(rental); //plus besoin de la methode utilitaire
     }
 
@@ -79,7 +82,7 @@ public class RentalService {
     public void createOneRental(RentalCreateRequest request, String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new UnauthorizedException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
-
+        log.info("owner founded");
         // Simulation pour le moment
         String pictureUrl = "";
         //Création de l'entity mappé et gestion des champs complexes ensuite
@@ -108,6 +111,7 @@ public class RentalService {
         rental.setPicture(pictureUrl);
         rental.setOwner(owner);
         rentalRepository.save(rental);
+        log.info("rental created");
     }
 
     //PUT
@@ -115,9 +119,11 @@ public class RentalService {
         // On cherche la location existante
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("Rental not found"));
+        log.info("rental founded");
 
         //On vérifie que l'owner et le user courant sont les mêmes
         if (!rental.getOwner().getEmail().equals(currentUserEmail)) {
+            log.error("Owner and current user does not match");
             throw new UnauthorizedException("You are not authorized to update this rental");
         }
 

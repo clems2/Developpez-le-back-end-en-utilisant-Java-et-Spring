@@ -18,7 +18,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUser(@PathVariable("id") @Min(1) Integer id) {
-        System.out.println("********* getUser *********");
         return ResponseEntity.ok(userService.getUserById(id));
     }
 }

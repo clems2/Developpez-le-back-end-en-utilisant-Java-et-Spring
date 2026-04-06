@@ -20,19 +20,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        System.out.println("********* register *********");
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) { //RequestBody car les données sont dans le corps de la requète et non l'URL
-        System.out.println("********* login *********");
         return ResponseEntity.ok(authService.login(request));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getMe(Principal principal){
-        System.out.println("********* getMe *********");
         //On récupère l'utilisateur authentifié grâce au principal (context Spring)
         UserResponse userResponse = authService.getMe(principal.getName());
         return ResponseEntity.ok(userResponse);

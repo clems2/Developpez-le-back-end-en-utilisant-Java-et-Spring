@@ -19,7 +19,6 @@ public class MessageController {
 
     @PostMapping
     public ResponseEntity<MessageResponse> create(@Valid  @RequestBody MessageRequest request) {
-        System.out.println("********* Nouveau message reçu :  " + request.getMessage() + " *********");
         messageService.saveMessage(request);
         return ResponseEntity.ok(new MessageResponse("Message send with success"));
     }

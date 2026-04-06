@@ -21,13 +21,11 @@ public class RentalController {
 
     @GetMapping
     public ResponseEntity<RentalsResponse> getAll() {
-        System.out.println("********* getAllRentals *********");
         return ResponseEntity.ok(rentalService.getAllRentals());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RentalDto> getOne(@PathVariable @Min(1) Integer id) {
-        System.out.println("********* getOneRental *********");
         return ResponseEntity.ok(rentalService.getRentalById(id));
     }
 
@@ -56,7 +54,6 @@ public class RentalController {
             @Valid @ModelAttribute RentalCreateRequest request, //Spring se charge du mapping du formulaire
             Principal principal
     ) {
-        System.out.println("********* createRental *********");
         // On appelle le service pour une location et on récupère le mail dans le Principal
         rentalService.createOneRental(request, principal.getName());
 
@@ -69,7 +66,6 @@ public class RentalController {
             @Valid @ModelAttribute  RentalUpdateRequest request, //Spring se charge du mapping du formulaire
             Principal principal // Injecté automatiquement
     ) {
-        System.out.println("********* putRental *********");
         rentalService.updateRental(id, request, principal.getName());
         return ResponseEntity.ok(new MessageResponse("Rental updated !"));
     }
