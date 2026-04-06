@@ -1,6 +1,7 @@
 package com.chatop.api.services;
 
 import com.chatop.api.dto.*;
+import com.chatop.api.exceptions.UnauthorizedException;
 import com.chatop.api.mappers.RentalMapper;
 import com.chatop.api.models.Rental;
 import com.chatop.api.models.User;
@@ -37,7 +38,7 @@ public class RentalService {
 
     public RentalDto getRentalById(Integer id) {
         Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                .orElseThrow(() -> new UnauthorizedException("Rental not found"));
         return rentalMapper.toDto(rental); //plus besoin de la methode utilitaire
     }
 
@@ -46,7 +47,7 @@ public class RentalService {
     public void createRentalsFromList(List<RentalRequestDto> rentalRequests, List<MultipartFile> pictures, String ownerEmail) {
         // On récupère l'objet User complet à partir de l'email du token
         User owner = userRepository.findByEmail(ownerEmail)
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
+                .orElseThrow(() -> new UnauthorizedException("Owner not found"));
 
         // On boucle sur la liste envoyée par le Front/Mockoon version
         for (int i = 0; i < rentalRequests.size(); i++) {
@@ -77,7 +78,7 @@ public class RentalService {
     //ONE BY ONE VERSION
     public void createOneRental(RentalCreateRequest request, String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail)
-                .orElseThrow(() -> new RuntimeException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
+                .orElseThrow(() -> new UnauthorizedException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
 
         // Simulation pour le moment
         String pictureUrl = "";
@@ -101,7 +102,7 @@ public class RentalService {
                 pictureUrl = baseUrl + "/images/" + fileName;
                 //TODO .requestMatchers("/images/**").permitAll() dans le filterChain voir si c'est la bonne solution car en termes de sécurité c'est pas terrible
             } catch (IOException e) {
-                throw new RuntimeException("Impossible de sauvegarder l'image", e);
+                throw new RuntimeException("Impossible de sauvegarder l'image, erreur interne lors de l'upload", e);
             }
         }
         rental.setPicture(pictureUrl);
@@ -113,11 +114,11 @@ public class RentalService {
     public void updateRental(Integer id, RentalUpdateRequest request, String currentUserEmail) {
         // On cherche la location existante
         Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                .orElseThrow(() -> new UnauthorizedException("Rental not found"));
 
         //On vérifie que l'owner et le user courant sont les mêmes
         if (!rental.getOwner().getEmail().equals(currentUserEmail)) {
-            throw new RuntimeException("You are not authorized to update this rental");
+            throw new UnauthorizedException("You are not authorized to update this rental");
         }
 
         // On met à jour les champs autorisés

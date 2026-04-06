@@ -1,6 +1,8 @@
 package com.chatop.api.services;
 
 import com.chatop.api.dto.MessageRequest;
+import com.chatop.api.exceptions.BadRequestException;
+import com.chatop.api.exceptions.ResourceNotFoundException;
 import com.chatop.api.mappers.MessageMapper;
 import com.chatop.api.models.Message;
 import com.chatop.api.models.Rental;
@@ -22,11 +24,11 @@ public class MessageService {
     public void saveMessage(MessageRequest request) {
         // Récupération de l'expéditeur
         User user = userRepository.findById(request.getUser_id())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadRequestException("User not found with id: "));
 
         // Récupération de la location concernée
         Rental rental = rentalRepository.findById(request.getRental_id())
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                .orElseThrow(() -> new BadRequestException("Rental not found"));
 
         // Construction de l'entité Message
         Message messageEntity = messageMapper.toEntity(request);

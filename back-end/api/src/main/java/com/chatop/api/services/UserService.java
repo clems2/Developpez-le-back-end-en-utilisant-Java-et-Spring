@@ -1,6 +1,7 @@
 package com.chatop.api.services;
 
 import com.chatop.api.dto.UserResponse;
+import com.chatop.api.exceptions.UnauthorizedException;
 import com.chatop.api.mappers.UserMapper;
 import com.chatop.api.models.User;
 import com.chatop.api.repositories.UserRepository;
@@ -15,7 +16,7 @@ public class UserService {
 
     public UserResponse getUserById(Integer id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
 
         return userMapper.toDto(user);
     }

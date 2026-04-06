@@ -22,6 +22,12 @@ public class GlobalExceptionHandler {
                 .body(new MessageResponse(ex.getMessage()));
     }
 
+    //Catch Bad requests Exceptions (400)
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<MessageResponse> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new MessageResponse(ex.getMessage()));
+    }
     // Catch RuntimeException (500)
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
