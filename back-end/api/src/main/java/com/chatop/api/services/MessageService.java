@@ -1,6 +1,7 @@
 package com.chatop.api.services;
 
 import com.chatop.api.dto.MessageRequest;
+import com.chatop.api.mappers.MessageMapper;
 import com.chatop.api.models.Message;
 import com.chatop.api.models.Rental;
 import com.chatop.api.models.User;
@@ -16,6 +17,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
+    private final MessageMapper messageMapper;
 
     public void saveMessage(MessageRequest request) {
         // Récupération de l'expéditeur
@@ -27,11 +29,11 @@ public class MessageService {
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
 
         // Construction de l'entité Message
-        Message messageEntity = Message.builder()
-                .message(request.getMessage())
-                .user(user)
-                .rental(rental)
-                .build();
+        Message messageEntity = messageMapper.toEntity(request);
+
+        //On ajoute les champs calculés
+        messageEntity.setUser(user);
+        messageEntity.setRental(rental);
 
         // On sauvegarde en base le message
         messageRepository.save(messageEntity);

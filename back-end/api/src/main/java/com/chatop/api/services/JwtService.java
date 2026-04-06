@@ -26,7 +26,7 @@ public class JwtService {
 
     //transforme la clé (String) en signature
     private Key getSignInKey() {
-        System.out.println("secret : "+privateKey);
+        //System.out.println("secret : "+privateKey);
         // byte[] keyBytes = Decoders.BASE64.decode(privateKey); // Si la clé privée est en base 64
         //return Keys.hmacShaKeyFor(keyBytes);
         return Keys.hmacShaKeyFor(privateKey.getBytes()); // Sinon on prend chaque octets
