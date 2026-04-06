@@ -4,6 +4,8 @@ import com.chatop.api.dto.AuthResponse;
 import com.chatop.api.dto.LoginRequest;
 import com.chatop.api.dto.RegisterRequest;
 import com.chatop.api.dto.UserResponse;
+import com.chatop.api.exceptions.ResourceNotFoundException;
+import com.chatop.api.exceptions.UnauthorizedException;
 import com.chatop.api.mappers.UserMapper;
 import com.chatop.api.models.User;
 import com.chatop.api.repositories.UserRepository;
@@ -32,10 +34,10 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request){
         // Check l'utilisateur possédant l'email
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UnauthorizedException("Invalid crendentials"));
         // Check le password
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){ // On utilise matches car l'une est encryptée alors que l'autre non
-            throw new RuntimeException("Invalid password");
+            throw new UnauthorizedException("Invalid crendentials");
         }
         // Génère le token
         String token = jwtService.generateToken(user.getEmail());
@@ -45,7 +47,7 @@ public class AuthService {
     }
 
     public UserResponse getMe(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
         //on mappe en DTO
         return userMapper.toDto(user);
