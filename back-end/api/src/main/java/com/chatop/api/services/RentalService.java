@@ -1,6 +1,7 @@
 package com.chatop.api.services;
 
 import com.chatop.api.dto.*;
+import com.chatop.api.mappers.RentalMapper;
 import com.chatop.api.models.Rental;
 import com.chatop.api.models.User;
 import com.chatop.api.repositories.RentalRepository;
@@ -23,21 +24,13 @@ import java.util.stream.Collectors;
 public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
+    private final RentalMapper rentalMapper; //On injecte le mapper (to entity, to dto)
 
     public RentalsResponse getAllRentals() {
         List<RentalDto> rentals = rentalRepository.findAll().stream()
-                .map(rental -> RentalDto.builder()
-                        .id(rental.getId())
-                        .name(rental.getName())
-                        .surface(rental.getSurface())
-                        .price(rental.getPrice())
-                        .picture(rental.getPicture())
-                        .description(rental.getDescription())
-                        .owner_id(rental.getOwner().getId())
-                        .created_at(rental.getCreatedAt())
-                        .updated_at(rental.getUpdatedAt())
-                        .build())
+                .map(rentalMapper::toDto) // Utilisation du mapper : ultra propre !
                 .collect(Collectors.toList());
+
 
         return new RentalsResponse(rentals);
     }
@@ -45,23 +38,9 @@ public class RentalService {
     public RentalDto getRentalById(Integer id) {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
-        return mapToDto(rental);
+        return rentalMapper.toDto(rental); //plus besoin de la methode utilitaire
     }
 
-    // Petite méthode utilitaire pour éviter la répétition du mapping
-    private RentalDto mapToDto(Rental rental) {
-        return RentalDto.builder()
-                .id(rental.getId())
-                .name(rental.getName())
-                .surface(rental.getSurface())
-                .price(rental.getPrice())
-                .picture(rental.getPicture())
-                .description(rental.getDescription())
-                .owner_id(rental.getOwner().getId())
-                .created_at(rental.getCreatedAt())
-                .updated_at(rental.getUpdatedAt())
-                .build();
-    }
 
     //MOCKOON VERSION
     public void createRentalsFromList(List<RentalRequestDto> rentalRequests, List<MultipartFile> pictures, String ownerEmail) {
@@ -102,7 +81,8 @@ public class RentalService {
 
         // Simulation pour le moment
         String pictureUrl = "";
-
+        //Création de l'entity mappé et gestion des champs complexes ensuite
+        Rental rental = rentalMapper.toEntity(request);
         //Gestion de l'upload du fichier
         if (request.getPicture() != null && !request.getPicture().isEmpty()) {
             try {
@@ -124,16 +104,8 @@ public class RentalService {
                 throw new RuntimeException("Impossible de sauvegarder l'image", e);
             }
         }
-
-        Rental rental = Rental.builder()
-                .name(request.getName())
-                .surface(request.getSurface())
-                .price(request.getPrice())
-                .description(request.getDescription())
-                .picture(pictureUrl)
-                .owner(owner)
-                .build();
-
+        rental.setPicture(pictureUrl);
+        rental.setOwner(owner);
         rentalRepository.save(rental);
     }
 
