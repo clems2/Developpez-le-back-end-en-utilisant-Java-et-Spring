@@ -4,7 +4,6 @@ import com.chatop.api.dto.AuthResponse;
 import com.chatop.api.dto.LoginRequest;
 import com.chatop.api.dto.RegisterRequest;
 import com.chatop.api.dto.UserResponse;
-import com.chatop.api.exceptions.ResourceNotFoundException;
 import com.chatop.api.exceptions.UnauthorizedException;
 import com.chatop.api.mappers.UserMapper;
 import com.chatop.api.models.User;

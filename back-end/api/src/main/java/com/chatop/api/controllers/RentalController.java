@@ -37,26 +37,6 @@ public class RentalController {
         return ResponseEntity.ok(rentalService.getRentalById(id));
     }
 
-    //Mockoon Version
-    /*@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MessageResponse> create(
-            @RequestParam("rentals") String rentalsJson, // La liste arrive sous forme de texte JSON
-            @RequestParam("pictures") List<MultipartFile> pictures, // Les fichiers binaires à part
-            Principal principal
-    ) throws JsonProcessingException {
-
-        // On utilise ObjectMapper pour transformer le texte JSON en liste d'objets
-        ObjectMapper objectMapper = new ObjectMapper();
-        RentalListRequestDto requestWrapper = objectMapper.readValue(rentalsJson, RentalListRequestDto.class);
-
-        //Récupération du user connecté
-        String email = principal.getName();
-
-        // On envoie tout au service pour traitement
-        rentalService.createRentalsFromList(requestWrapper.getRentals(), pictures, email);
-        return ResponseEntity.ok(new MessageResponse("Rental created !"));
-    }*/
-
     @Operation(summary = "Créer une location", description = "Permet d'ajouter une nouvelle annonce avec une image.")
     @ApiResponse(responseCode = "200", description = "Location crée")
     @ApiResponse(responseCode = "401", description = "Propriétaire non trouvé ou utilisateur non authentifié")

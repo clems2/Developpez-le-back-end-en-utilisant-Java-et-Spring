@@ -1,11 +1,10 @@
 package com.chatop.api.controllers;
 
-import com.chatop.api.dto.AuthResponse;
-import com.chatop.api.dto.LoginRequest;
-import com.chatop.api.dto.RegisterRequest;
-import com.chatop.api.dto.UserResponse;
+import com.chatop.api.dto.*;
 import com.chatop.api.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,7 +23,7 @@ public class AuthController {
 
     @Operation(summary = "S'inscrire", description = "Crée un nouvel utilisateur et retourne un token")
     @ApiResponse(responseCode = "200", description = "Inscription réussie")
-    @ApiResponse(responseCode = "400", description = "Données invalides")
+    @ApiResponse(responseCode = "400", description = "Données invalides", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));

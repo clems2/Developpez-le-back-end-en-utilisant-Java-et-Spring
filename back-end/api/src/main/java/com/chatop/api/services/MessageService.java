@@ -2,7 +2,6 @@ package com.chatop.api.services;
 
 import com.chatop.api.dto.MessageRequest;
 import com.chatop.api.exceptions.BadRequestException;
-import com.chatop.api.exceptions.ResourceNotFoundException;
 import com.chatop.api.mappers.MessageMapper;
 import com.chatop.api.models.Message;
 import com.chatop.api.models.Rental;
