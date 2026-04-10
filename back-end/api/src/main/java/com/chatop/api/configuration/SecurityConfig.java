@@ -26,7 +26,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Désactivé car on utilise JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login","/images/**").permitAll() //TODO : Penser à l'URL Swagger
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                //Ressources
+                                "/images/**",
+                                // Routes Swagger/OpenAPI
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
