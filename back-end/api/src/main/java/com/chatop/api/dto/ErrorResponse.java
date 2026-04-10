@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "Réponse standard en cas d'erreur")
 public class ErrorResponse {
-    @Schema(description = "Message d'erreur", example = "Invalid credentials")
+    @Schema(description = "Message d'erreur", example = "An error occured")
     private String message;
 }
