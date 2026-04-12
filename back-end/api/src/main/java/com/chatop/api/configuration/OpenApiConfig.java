@@ -22,5 +22,5 @@ import org.springframework.context.annotation.Configuration;
         scheme = "bearer",
         bearerFormat = "JWT"
 )
-public class OpenApiConfig { //Config de l'api afin de tester les routes normales et sécurisées avec token
+public class OpenApiConfig {
 }

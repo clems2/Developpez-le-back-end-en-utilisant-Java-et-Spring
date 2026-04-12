@@ -33,7 +33,7 @@ public class AuthController {
     @ApiResponse(responseCode = "200", description = "Connexion réussie - Retourne un token")
     @ApiResponse(responseCode = "401", description = "Identifiants invalides")
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) { //RequestBody car les données sont dans le corps de la requète et non l'URL
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
@@ -42,7 +42,6 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Token invalide ou utilisateur non connecté")
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getMe(Principal principal){
-        //On récupère l'utilisateur authentifié grâce au principal (context Spring)
         UserResponse userResponse = authService.getMe(principal.getName());
         return ResponseEntity.ok(userResponse);
 

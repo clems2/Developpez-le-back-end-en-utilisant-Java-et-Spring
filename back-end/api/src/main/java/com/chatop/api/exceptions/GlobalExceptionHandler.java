@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     // Catch Access Denied (403)
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ApiResponse(//TODO voir s'il y a une autre solution car le mockoon ne gérait pas cette erreur
+    @ApiResponse(
             responseCode = "403",
             description = "Accès refusé",
             content = @Content(
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     }
 
     // Catch not Found errors (404)
-    @ExceptionHandler(ResourceNotFoundException.class) // On va la créer juste après
+    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ApiResponse(
             responseCode = "404",

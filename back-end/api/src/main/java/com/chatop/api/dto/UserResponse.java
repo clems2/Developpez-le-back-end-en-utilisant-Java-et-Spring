@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor //Le @Builder en a besoin pour sa compilation
-@NoArgsConstructor //Indispensable pour Hibernate et Jackson car ils créent un objet vide pour le remplir
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Schema(description = "Détails publics d'un utilisateur")
 public class UserResponse {

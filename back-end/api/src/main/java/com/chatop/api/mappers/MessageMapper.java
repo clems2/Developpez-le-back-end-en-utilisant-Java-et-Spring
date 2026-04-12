@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)   // Géré dans le service
-    @Mapping(target = "rental", ignore = true) // Géré dans le service
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "rental", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     Message toEntity(MessageRequest request);

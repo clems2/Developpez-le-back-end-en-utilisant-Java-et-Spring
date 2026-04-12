@@ -34,15 +34,14 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request){
-        // Check l'utilisateur possédant l'email
         log.info("Try to check credentials");
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new UnauthorizedException("Invalid crendentials"));
-        // Check le password
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){ // On utilise matches car l'une est encryptée alors que l'autre non
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             throw new UnauthorizedException("Invalid crendentials");
         }
         log.info("User identified with credentials");
-        // Génère le token
+
         String token = jwtService.generateToken(user.getEmail());
         return AuthResponse.builder()
                 .token(token)
@@ -53,7 +52,6 @@ public class AuthService {
         log.info("Try to get myself user");
         User user = userRepository.findByEmail(email).orElseThrow(()-> new UnauthorizedException("User not found"));
         log.info("User found");
-        //on mappe en DTO
         return userMapper.toDto(user);
     }
 }

@@ -24,25 +24,20 @@ public class MessageService {
 
     public void saveMessage(MessageRequest request) {
         log.info("Nouveau message reçu : {} ", request.getMessage());
-        // Récupération de l'expéditeur
         log.info("Try to get the sender: {}", request.getUser_id());
         User user = userRepository.findById(request.getUser_id())
                 .orElseThrow(() -> new BadRequestException("User not found with id: "));
 
-        // Récupération de la location concernée
         log.info("Try to get the rental: {}", request.getRental_id());
         Rental rental = rentalRepository.findById(request.getRental_id())
                 .orElseThrow(() -> new BadRequestException("Rental not found"));
 
         log.info("User and rental founded");
-        // Construction de l'entité Message
         Message messageEntity = messageMapper.toEntity(request);
 
-        //On ajoute les champs calculés
         messageEntity.setUser(user);
         messageEntity.setRental(rental);
 
-        // On sauvegarde en base le message
         messageRepository.save(messageEntity);
     }
 }

@@ -35,7 +35,7 @@ public class RentalDto {
     private String description;
 
     @Schema(description = "ID du propriétaire", example = "1")
-    private Integer owner_id; // On renvoie juste l'ID, pas tout l'objet User
+    private Integer owner_id;
 
     @JsonFormat(pattern = "yyyy/MM/dd")
     @Schema(description = "Date de création", example = "2012/12/02")

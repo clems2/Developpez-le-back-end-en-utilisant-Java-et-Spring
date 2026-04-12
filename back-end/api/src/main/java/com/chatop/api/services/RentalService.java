@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
-    private final RentalMapper rentalMapper; //On injecte le mapper (to entity, to dto)
+    private final RentalMapper rentalMapper;
 
     public RentalsResponse getAllRentals() {
         List<RentalDto> rentals = rentalRepository.findAll().stream()
-                .map(rentalMapper::toDto) // Utilisation du mapper : ultra propre !
+                .map(rentalMapper::toDto)
                 .collect(Collectors.toList());
 
         log.info("Rentals founded");
@@ -43,17 +43,17 @@ public class RentalService {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("Rental not found"));
         log.info("Rentals founded with id : {}",id);
-        return rentalMapper.toDto(rental); //plus besoin de la methode utilitaire
+        return rentalMapper.toDto(rental);
     }
 
 
     public void createOneRental(RentalCreateRequest request, String ownerEmail) {
         User owner = userRepository.findByEmail(ownerEmail)
-                .orElseThrow(() -> new UnauthorizedException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
+                .orElseThrow(() -> new UnauthorizedException("Owner not found"));
         log.info("owner founded");
-        //Création de l'entity mappé et gestion des champs complexes ensuite
+
         Rental rental = rentalMapper.toEntity(request);
-        //Gestion de l'upload du fichier
+
         String pictureUrl = uploadPicture(request.getPicture());
         rental.setPicture(pictureUrl);
         rental.setOwner(owner);
@@ -66,17 +66,12 @@ public class RentalService {
             return "";
         }
         try {
-            // Création d'un nom unique : timestamp + nom original
             String fileName = System.currentTimeMillis() + "_" + picture.getOriginalFilename();
 
-            // Chemin absolu vers mon dossier static
             Path path = Paths.get("src/main/resources/static/images/" + fileName);
 
-            // Copie physique du fichier
             Files.copy(picture.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-            // Construction de l'URL finale pour la BDD
-            //On va le récupérer de façon dynamique avec le contexte Spring pour éviter des conflits sur la config
             String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
            return baseUrl + "/images/" + fileName;
         } catch (IOException e) {
@@ -85,28 +80,20 @@ public class RentalService {
         }
     }
 
-    //PUT
     public void updateRental(Integer id, RentalUpdateRequest request, String currentUserEmail) {
-        // On cherche la location existante
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new UnauthorizedException("Rental not found"));
         log.info("rental founded");
 
-        //On vérifie que l'owner et le user courant sont les mêmes
         if (!rental.getOwner().getEmail().equals(currentUserEmail)) {
             log.error("Owner and current user does not match");
             throw new UnauthorizedException("You are not authorized to update this rental");
         }
 
-        // On met à jour les champs autorisés
         rental.setName(request.getName());
         rental.setSurface(request.getSurface());
         rental.setPrice(request.getPrice());
         rental.setDescription(request.getDescription());
-
-        // Note : On ne touche PAS à rental.getPicture(), //TODO voir s'il y a des sécurités ou annotation pour eviter qu'on y accède
-
-        // Sauvegarde (Update en SQL)
         rentalRepository.save(rental);
     }
 }

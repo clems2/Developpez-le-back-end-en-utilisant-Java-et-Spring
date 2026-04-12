@@ -18,7 +18,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/rentals")
 @RequiredArgsConstructor
-@Validated //Valide les annotations sur les paramètres directement
+@Validated
 @Tag(name = "Rentals", description = "Gestion des annonces de location")
 public class RentalController {
     private final RentalService rentalService;
@@ -42,12 +42,10 @@ public class RentalController {
     @ApiResponse(responseCode = "401", description = "Propriétaire non trouvé ou utilisateur non authentifié")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> create(
-            @Valid @ModelAttribute RentalCreateRequest request, //Spring se charge du mapping du formulaire
+            @Valid @ModelAttribute RentalCreateRequest request,
             Principal principal
     ) {
-        // On appelle le service pour une location et on récupère le mail dans le Principal
         rentalService.createOneRental(request, principal.getName());
-
         return ResponseEntity.ok(new MessageResponse("Rental created !"));
     }
 
@@ -57,8 +55,8 @@ public class RentalController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MessageResponse> update(
             @PathVariable("id") @Min(1) Integer id,
-            @Valid @ModelAttribute  RentalUpdateRequest request, //Spring se charge du mapping du formulaire
-            Principal principal // Injecté automatiquement
+            @Valid @ModelAttribute  RentalUpdateRequest request,
+            Principal principal
     ) {
         rentalService.updateRental(id, request, principal.getName());
         return ResponseEntity.ok(new MessageResponse("Rental updated !"));

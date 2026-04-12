@@ -13,7 +13,7 @@ public interface UserMapper {
     UserResponse toDto(User user);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", ignore = true) // On le gère manuellement pour l'encodage
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     User toEntity(RegisterRequest request);
