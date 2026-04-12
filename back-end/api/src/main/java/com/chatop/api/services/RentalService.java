@@ -7,9 +7,11 @@ import com.chatop.api.models.Rental;
 import com.chatop.api.models.User;
 import com.chatop.api.repositories.RentalRepository;
 import com.chatop.api.repositories.UserRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
@@ -49,35 +51,38 @@ public class RentalService {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new UnauthorizedException("Owner not found")); //On récupère l'objet User complet à partir de l'email du token
         log.info("owner founded");
-        // Simulation pour le moment
-        String pictureUrl = "";
         //Création de l'entity mappé et gestion des champs complexes ensuite
         Rental rental = rentalMapper.toEntity(request);
         //Gestion de l'upload du fichier
-        if (request.getPicture() != null && !request.getPicture().isEmpty()) {
-            try {
-                // Création d'un nom unique : timestamp + nom original
-                String fileName = System.currentTimeMillis() + "_" + request.getPicture().getOriginalFilename();
-
-                // Chemin absolu vers mon dossier static
-                Path path = Paths.get("src/main/resources/static/images/" + fileName);
-
-                // Copie physique du fichier
-                Files.copy(request.getPicture().getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-                // Construction de l'URL finale pour la BDD
-                //On va le récupérer de façon dynamique avec le contexte Spring pour éviter des conflits sur la config
-                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-                pictureUrl = baseUrl + "/images/" + fileName;
-                //TODO .requestMatchers("/images/**").permitAll() dans le filterChain voir si c'est la bonne solution car en termes de sécurité c'est pas terrible
-            } catch (IOException e) {
-                throw new RuntimeException("Impossible de sauvegarder l'image, erreur interne lors de l'upload", e);
-            }
-        }
+        String pictureUrl = uploadPicture(request.getPicture());
         rental.setPicture(pictureUrl);
         rental.setOwner(owner);
         rentalRepository.save(rental);
         log.info("rental created");
+    }
+
+    private String uploadPicture(MultipartFile picture) {
+        if (picture == null || picture.isEmpty()) {
+            return "";
+        }
+        try {
+            // Création d'un nom unique : timestamp + nom original
+            String fileName = System.currentTimeMillis() + "_" + picture.getOriginalFilename();
+
+            // Chemin absolu vers mon dossier static
+            Path path = Paths.get("src/main/resources/static/images/" + fileName);
+
+            // Copie physique du fichier
+            Files.copy(picture.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+            // Construction de l'URL finale pour la BDD
+            //On va le récupérer de façon dynamique avec le contexte Spring pour éviter des conflits sur la config
+            String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+           return baseUrl + "/images/" + fileName;
+        } catch (IOException e) {
+            log.error("Erreur lors de l'upload de l'image : {}", e.getMessage());
+            throw new RuntimeException("Impossible de sauvegarder l'image, erreur interne lors de l'upload", e);
+        }
     }
 
     //PUT
